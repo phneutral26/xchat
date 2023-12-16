@@ -1,0 +1,14 @@
+#BlueJ class context
+comment0.target=xserver
+comment1.params=
+comment1.target=xserver()
+comment1.text=\r\n\ Konstruktor\ f\u00FCr\ Objekte\ der\ Klasse\ xserver\r\n
+comment2.params=pIP\ pPort\ pUsername
+comment2.target=void\ login(java.lang.String,\ int,\ java.lang.String)
+comment3.params=pIP\ pPort\ pMessage
+comment3.target=void\ processMessage(java.lang.String,\ int,\ java.lang.String)
+comment4.params=pIP\ pPort
+comment4.target=void\ processClosingConnection(java.lang.String,\ int)
+comment5.params=pIP\ pPort
+comment5.target=void\ processNewConnection(java.lang.String,\ int)
+numComments=6

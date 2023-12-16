@@ -1,0 +1,7 @@
+#BlueJ class context
+comment0.target=xclient
+comment1.params=
+comment1.target=xclient()
+comment2.params=pMessage
+comment2.target=void\ processMessage(java.lang.String)
+numComments=3
