@@ -10,7 +10,7 @@ public class xserver extends Server {
 
     public void login(String pIP, int pPort, String pUsername) {
         if (usersToIP.containsKey(pUsername)) {
-            send(pIP, pPort, "LOGIN_FAILURE: User already exists");
+            send(pIP, pPort, "LOGIN_FAILURE");
         } else {
             users.append(pUsername);
             usersToIP.put(pUsername, pIP);
@@ -19,12 +19,19 @@ public class xserver extends Server {
     }
 
     public void logout(String pClientIP, int pClientPort, String pUsername) {
-        if (!usersToIP.containsKey(pUsername) || !pClientIP.equals(usersToIP.get(pUsername))) {
-            send(pClientIP, pClientPort, "LOGOUT_FAILURE");
-        } else {
-            users.remove(pUsername);
+        if(usersToIP.containsKey(pUsername) && pClientIP.equals(usersToIP.get(pUsername))) {
+            users.toFirst();
+            while (users.hasAccess()) {
+                if (users.getContent().equals(pUsername)) {
+                    users.remove();
+                    break;
+                }
+                users.next();
+            }
             usersToIP.remove(pUsername);
             send(pClientIP, pClientPort, "LOGOUT_SUCCESS");
+        } else {
+            send(pClientIP, pClientPort, "LOGOUT_FAILURE");
         }
     }
 
@@ -42,18 +49,20 @@ public class xserver extends Server {
         }
     }
 
-    public void processClosingConnection(String pIP, int pPort) {
-        String username = users.stream()
-                .filter(u -> pIP.equals(usersToIP.get(u)))
-                .findFirst()
-                .orElse(null);
-        if (username != null) {
-            logout(pIP, pPort, username);
+    public void processClosingConnection(String pIP, int pPort){
+        users.toFirst(); // Go to beginning of user list
+        while(users.hasAccess()){ // Iterate through the list
+            String currentUser = users.getContent(); // Assume getContentObject will give you current user's name
+            if(pIP.equals(usersToIP.get(currentUser))){
+                users.remove();
+                usersToIP.remove(currentUser);
+            } else {
+                users.next();
+            }
         }
     }
 
     public void processNewConnection(String pIP, int pPort) {
-        // This method intentionally left empty. End classes should handle what should happen when a new connection is established.
     }
 
     public void processMessage(String pClientIP, int pClientPort, String pMessage) {

@@ -58,7 +58,9 @@ public class xclient extends Client {
 
                 case 5: // Exit
                     if (loggedIn) {
-                        send("LOGOUT:" + username);
+                        System.out.println("Enter username:");
+                        String hUsername = scan.nextLine();
+                        send("LOGOUT:" + hUsername);
                     }
                     System.out.println("Exiting chat...");
                     System.exit(0);
