@@ -24,7 +24,7 @@ public class xserver extends Server
         {
             users.append(pUsername);
             usersToIP.put(pUsername, pIP);
-            send("LOGIN_SUCESS");
+            send(pIP, pPort, "LOGIN_SUCESS");
         } else {
             send(pIP, pPort, "LOGIN_FAILURE");
         }

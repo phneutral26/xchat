@@ -5,10 +5,11 @@ public class xclient extends Client
 
     public xclient() {
         super("127.0.0.1", 420);
+        Scanner scan = new Scanner(System.in);
         loggedIn = false;
 
         if (isConnected()) {
-            Scanner scan = new Scanner(System.in);
+            
             String username = scan.nextLine();
             send(username);
         }
@@ -19,13 +20,13 @@ public class xclient extends Client
             System.out.println("4. Private message");
             System.out.println("Enter your choice:");
 
-            int choice = scanner.nextInt();
-            scanner.nextLine();  // Consume newline if any
+            int choice = scan.nextInt();
+            scan.nextLine();  // Consume newline if any
 
             switch (choice) {
                 case 1: // Login
                     System.out.println("Enter username:");
-                    String username = scanner.nextLine();
+                    String username = scan.nextLine();
                     send("LOGIN:" + username);
                     break;
 
@@ -36,23 +37,24 @@ public class xclient extends Client
 
                 case 3: // Broadcast message
                     System.out.println("Enter your message:");
-                    String broadcastMessage = scanner.nextLine();
+                    String broadcastMessage = scan.nextLine();
                     send("BROADCAST:" + broadcastMessage);
                     break;
 
                 case 4: // Private message
                     System.out.println("Enter recipient username:");
-                    String recipientUsername = scanner.nextLine();
+                    String recipientUsername = scan.nextLine();
                     System.out.println("Enter your message:");
-                    String privateMessage = scanner.nextLine();
+                    String privateMessage = scan.nextLine();
                     send("PRIVATE:" + recipientUsername + ":" + privateMessage);
                     break;
 
                 default:
                     System.out.println("Invalid choice. Please try again.");
                     break;
+            }
+        }
     }
-
     public void processMessage(String pMessage) {
         if (pMessage.equals("LOGIN_SUCCESS")) {
             loggedIn = true;
@@ -67,13 +69,5 @@ public class xclient extends Client
 
     public boolean isLoggedIn() {
         return loggedIn;
-    }
-
-    public void writeMessage(String pMessage) {
-        send("CHATROOM_MESSAGE:" + pMessage);
-    }
-
-    public void writePrivateMessage(String pServerIP, int pServerPort, String pMessage) {
-        ("PRIVATE_MESSAGE:" + empfaengerIP + ":" + pMessage);
     }
 }
