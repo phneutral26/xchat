@@ -9,45 +9,43 @@ public class xclient extends Client
         loggedIn = false;
 
         if (isConnected()) {
-            
+            System.out.println("Enter username:");
             String username = scan.nextLine();
-            send(username);
+            send("LOGIN:" + username);
         }
-        while (true) {
-            System.out.println("1. Login");
-            System.out.println("2. Logout");
-            System.out.println("3. Broadcast message");
-            System.out.println("4. Private message");
+
+        while (loggedIn) {
+            System.out.println("1. Logout");
+            System.out.println("2. Broadcast message");
+            System.out.println("3. Private message");
+            System.out.println("4. List users");
             System.out.println("Enter your choice:");
 
             int choice = scan.nextInt();
-            scan.nextLine();  // Consume newline if any
+            scan.nextLine();
 
             switch (choice) {
-                case 1: // Login
+                case 1: // Logout
                     System.out.println("Enter username:");
                     String username = scan.nextLine();
-                    send("LOGIN:" + username);
+                    send("LOGOUT:" + username);
                     break;
 
-                case 2: // Logout
-                    send("LOGOUT");
-                    loggedIn = false;
-                    break;
-
-                case 3: // Broadcast message
+                case 2: // Broadcast message
                     System.out.println("Enter your message:");
                     String broadcastMessage = scan.nextLine();
                     send("BROADCAST:" + broadcastMessage);
                     break;
 
-                case 4: // Private message
+                case 3: // Private message
                     System.out.println("Enter recipient username:");
                     String recipientUsername = scan.nextLine();
                     System.out.println("Enter your message:");
                     String privateMessage = scan.nextLine();
                     send("PRIVATE:" + recipientUsername + ":" + privateMessage);
                     break;
+                case 4:
+
 
                 default:
                     System.out.println("Invalid choice. Please try again.");
@@ -62,6 +60,12 @@ public class xclient extends Client
         } else if (pMessage.equals("LOGIN_FAILURE")) {
             loggedIn = false;
             System.out.println("Login failed. Please try again.");
+        } else if (pMessage.equals("LOGOUT_SUCCESS")) {
+            loggedIn = false;
+            System.out.println("You are now logged out.");
+        }
+        else if (pMessage.equals("LOGOUT_FAILURE")) {
+            System.out.println("Logout failed. Please try again.");
         } else {
             System.out.println(pMessage);
         }

@@ -10,6 +10,7 @@ public class xserver extends Server
         super(420);
     }
 
+    // Funktion zum Login eines Benutzers
     public void login(String pIP, int pPort, String pUsername)
     {
         boolean userVorhanden = false;
@@ -30,29 +31,29 @@ public class xserver extends Server
         }
     }
 
-    public void logout(String pUsername, String pIP) {
+    // Funktion zum Logout eines Benutzers
+    public void logout(String pClientIP, int pClientPort, String pUsername) {
         users.toFirst();
         while(users.hasAccess()) {
             if (users.getContent().equals(pUsername)) {
                 String userIP = usersToIP.get(pUsername);
-                if (pIP.equals(userIP)) {    // Verify if request is legitimately from the user
+                if (pIP.equals(userIP)) {   // Verifizieren Sie, ob die Anfrage legitimerweise vom Benutzer stammt
                     users.remove();
                     usersToIP.remove(pUsername);
-                    System.out.println("User " + pUsername + " has been logged out.");
+                    send(pClientIP, pClientPort, "LOGOUT_SUCCESS");
                 } else {
-                    System.out.println("Logout request from a different IP detected for user " + pUsername);
+                    send(pClientIP, pClientPort, "LOGOUT_FAILURE");
                 }
                 return;
             }
             users.next();
         }
-        System.out.println("User " + pUsername + " is not logged in.");
+        send(pClientIP, pClientPort, "LOGOUT_FAILURE");
     }
 
 
 
     public void broadcastMessage(String message) {
-        // Iterate through all connected users
         users.toFirst();
         while(users.hasAccess()) {
             String recipientUsername = users.getContent();
@@ -64,18 +65,18 @@ public class xserver extends Server
 
     public void privateMessage(String recipientUsername, String message) {
         if (usersToIP.containsKey(recipientUsername)) {
-            // If the recipient user is online, send the private message
             String recipientIP = usersToIP.get(recipientUsername);
             send(recipientIP, 420, "PRIVATE:" + recipientUsername + ":" + message);
         } else {
             System.out.println("User " + recipientUsername + " does not exist or is not online.");
         }
     }
+    // Nachrichtenverarbeitung
     public void processMessage(String pClientIP, int pClientPort, String pMessage) {
-        if (pMessage.equals("LOGIN:")) {
+        if (pMessage.equals("LOGIN:")) { // Uberprufung auf Login Nachrichte
             String pUsername = pMessage.substring(6);
             login(pClientIP, pClientPort, pUsername);
-        } else if (pMessage.startsWith("LOGOUT:")) {
+        } else if (pMessage.startsWith("LOGOUT:")) { //Uberprufung auf Logoout
             String pUsername = pMessage.substring(7);
             logout(pUsername, pClientIP);
             send(pClientIP, pClientPort, "You have been logged out.");
@@ -91,10 +92,10 @@ public class xserver extends Server
             String[] users = pMessage.substring(9).split(",");
             System.out.println("Connected users:");
             for (String user : users) {
-                System.out.println(user);
+                send(pClientIP, pClientPort, user);
             }
         } else {
-            System.out.println(pMessage);
+            send(pClientIP, pClientPort, "Ungültige Anfrage");
         }
     }
     public void processClosingConnection(String pIP, int pPort)
