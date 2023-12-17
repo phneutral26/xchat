@@ -1,5 +1,4 @@
 import java.util.Scanner;
-
 public class xclient extends Client {
 
     private boolean loggedIn;
@@ -14,7 +13,11 @@ public class xclient extends Client {
             String username = scan.nextLine();
             send("LOGIN:" + username);
         }
-
+        try {
+          Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }   
         while (true) {
             if(!loggedIn) {
                 System.out.println("You are not logged in, can't perform operations. Exiting..");
