@@ -1,109 +1,82 @@
 import java.util.HashMap;
 
-public class xserver extends Server
-{
+public class xserver extends Server {
     List<String> users = new List();
     HashMap<String, String> usersToIP = new HashMap<>();
 
-    public xserver()
-    {
+    public xserver() {
         super(420);
     }
 
-    // Funktion zum Login eines Benutzers
-    public void login(String pIP, int pPort, String pUsername)
-    {
-        boolean userVorhanden = false;
-        users.toFirst();
-        while(users.hasAccess())
-        {
-            if (users.getContent().equals(pUsername))
-                userVorhanden = true;
-            users.next();
-        }
-        if (!userVorhanden)
-        {
+    public void login(String pIP, int pPort, String pUsername) {
+        if (usersToIP.containsKey(pUsername)) {
+            send(pIP, pPort, "LOGIN_FAILURE: User already exists");
+        } else {
             users.append(pUsername);
             usersToIP.put(pUsername, pIP);
-            send(pIP, pPort, "LOGIN_SUCESS");
-        } else {
-            send(pIP, pPort, "LOGIN_FAILURE");
+            send(pIP, pPort, "LOGIN_SUCCESS");
         }
     }
 
-    // Funktion zum Logout eines Benutzers
     public void logout(String pClientIP, int pClientPort, String pUsername) {
-        users.toFirst();
-        while(users.hasAccess()) {
-            if (users.getContent().equals(pUsername)) {
-                String userIP = usersToIP.get(pUsername);
-                if (pClientIP.equals(userIP)) {   // Verifizieren Sie, ob die Anfrage legitimerweise vom Benutzer stammt
-                    users.remove();
-                    usersToIP.remove(pUsername);
-                    send(pClientIP, pClientPort, "LOGOUT_SUCCESS");
-                } else {
-                    send(pClientIP, pClientPort, "LOGOUT_FAILURE");
-                }
-                return;
-            }
-            users.next();
+        if (!usersToIP.containsKey(pUsername) || !pClientIP.equals(usersToIP.get(pUsername))) {
+            send(pClientIP, pClientPort, "LOGOUT_FAILURE");
+        } else {
+            users.remove(pUsername);
+            usersToIP.remove(pUsername);
+            send(pClientIP, pClientPort, "LOGOUT_SUCCESS");
         }
-        send(pClientIP, pClientPort, "LOGOUT_FAILURE");
     }
-
-
 
     public void broadcastMessage(String message) {
-        users.toFirst();
-        while(users.hasAccess()) {
-            String recipientUsername = users.getContent();
-            String recipientIP = usersToIP.get(recipientUsername);
-            send(recipientIP, 420, "MESSAGE:" + message);
-            users.next();
+        for(String recipientUsername : usersToIP.keySet()) {
+            send(usersToIP.get(recipientUsername), 420, "MESSAGE:" + message);
         }
     }
 
     public void privateMessage(String recipientUsername, String message) {
-        if (usersToIP.containsKey(recipientUsername)) {
-            String recipientIP = usersToIP.get(recipientUsername);
-            send(recipientIP, 420, "PRIVATE:" + recipientUsername + ":" + message);
-        } else {
+        if (!usersToIP.containsKey(recipientUsername)) {
             System.out.println("User " + recipientUsername + " does not exist or is not online.");
+        } else {
+            send(usersToIP.get(recipientUsername), 420, "PRIVATE:" + recipientUsername + ":" + message);
         }
     }
-    // Nachrichtenverarbeitung
+
+    public void processClosingConnection(String pIP, int pPort) {
+        String username = users.stream()
+                .filter(u -> pIP.equals(usersToIP.get(u)))
+                .findFirst()
+                .orElse(null);
+        if (username != null) {
+            logout(pIP, pPort, username);
+        }
+    }
+
+    public void processNewConnection(String pIP, int pPort) {
+        // This method intentionally left empty. End classes should handle what should happen when a new connection is established.
+    }
+
     public void processMessage(String pClientIP, int pClientPort, String pMessage) {
-        if (pMessage.equals("LOGIN:")) { // Uberprufung auf Login Nachrichte
+        if (pMessage.startsWith("LOGIN:")) {
             String pUsername = pMessage.substring(6);
             login(pClientIP, pClientPort, pUsername);
-        } else if (pMessage.startsWith("LOGOUT:")) { //Uberprufung auf Logoout
+        } else if (pMessage.startsWith("LOGOUT:")) {
             String pUsername = pMessage.substring(7);
             logout(pClientIP, pClientPort, pUsername);
-            send(pClientIP, pClientPort, "You have been logged out.");
-        } else if (pMessage.startsWith("BROADCAST:")) { // handle general message
+        } else if (pMessage.startsWith("BROADCAST:")) {
             String message = pMessage.substring(10);
             broadcastMessage(message);
-        } else if (pMessage.startsWith("PRIVATE:")) { // handle private message
-            String[] parts = pMessage.substring(8).split(":");
-            String recipient = parts[0];
-            String message = parts[1];
-            privateMessage(recipient, message);
-        } else if (pMessage.startsWith("USERLIST:")) {
-            String[] users = pMessage.substring(9).split(",");
-            System.out.println("Connected users:");
-            for (String user : users) {
-                send(pClientIP, pClientPort, user);
+        } else if (pMessage.startsWith("PRIVATE:")) {
+            String[] parts = pMessage.split(":", 3);
+            if (parts.length < 3) {
+                send(pClientIP, pClientPort, "Invalid private message format.");
+                return;
             }
+            privateMessage(parts[1], parts[2]);
+        } else if (pMessage.startsWith("USERLIST:")) {
+            send(pClientIP, pClientPort, String.join(",", usersToIP.keySet()));
         } else {
-            send(pClientIP, pClientPort, "Ungültige Anfrage");
+            send(pClientIP, pClientPort, "Invalid request");
         }
-    }
-    public void processClosingConnection(String pIP, int pPort)
-    {
-        
-    }
-    
-    public void processNewConnection(String pIP, int pPort)
-    {
     }
 }

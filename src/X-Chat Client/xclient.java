@@ -1,6 +1,7 @@
 import java.util.Scanner;
-public class xclient extends Client
-{
+
+public class xclient extends Client {
+
     private boolean loggedIn;
 
     public xclient() {
@@ -14,12 +15,18 @@ public class xclient extends Client
             send("LOGIN:" + username);
         }
 
-        while (loggedIn) {
+        while (true) {
+            if(!loggedIn) {
+                System.out.println("You are not logged in, can't perform operations. Exiting..");
+                break;
+            }
+
+            System.out.println("Enter your choice:");
             System.out.println("1. Logout");
             System.out.println("2. Broadcast message");
             System.out.println("3. Private message");
             System.out.println("4. List users");
-            System.out.println("Enter your choice:");
+            System.out.println("5. Exit");
 
             int choice = scan.nextInt();
             scan.nextLine();
@@ -44,8 +51,17 @@ public class xclient extends Client
                     String privateMessage = scan.nextLine();
                     send("PRIVATE:" + recipientUsername + ":" + privateMessage);
                     break;
-                case 4:
 
+                case 4: // List users
+                    send("USERLIST:");
+                    break;
+
+                case 5: // Exit
+                    if (loggedIn) {
+                        send("LOGOUT:" + username);
+                    }
+                    System.out.println("Exiting chat...");
+                    System.exit(0);
 
                 default:
                     System.out.println("Invalid choice. Please try again.");
@@ -53,6 +69,7 @@ public class xclient extends Client
             }
         }
     }
+
     public void processMessage(String pMessage) {
         if (pMessage.equals("LOGIN_SUCCESS")) {
             loggedIn = true;
