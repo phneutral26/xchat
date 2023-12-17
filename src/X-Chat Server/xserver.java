@@ -5,9 +5,6 @@ public class xserver extends Server
     List<String> users = new List();
     HashMap<String, String> usersToIP = new HashMap<>();
 
-    /**
-     * Konstruktor für Objekte der Klasse xserver
-     */
     public xserver()
     {
         super(420);
@@ -33,22 +30,22 @@ public class xserver extends Server
         }
     }
 
-    public void logout(String pUsername) {
+    public void logout(String pUsername, String pIP) {
         users.toFirst();
         while(users.hasAccess()) {
             if (users.getContent().equals(pUsername)) {
-                users.remove();  // remove user from users list
-                if (usersToIP.containsKey(pUsername)) {
-                    usersToIP.remove(pUsername);  // remove user's IP from HashMap
+                String userIP = usersToIP.get(pUsername);
+                if (pIP.equals(userIP)) {    // Verify if request is legitimately from the user
+                    users.remove();
+                    usersToIP.remove(pUsername);
+                    System.out.println("User " + pUsername + " has been logged out.");
+                } else {
+                    System.out.println("Logout request from a different IP detected for user " + pUsername);
                 }
-
-                System.out.println("User " + pUsername + " has been logged out.");
                 return;
             }
-
             users.next();
         }
-
         System.out.println("User " + pUsername + " is not logged in.");
     }
 
@@ -78,8 +75,9 @@ public class xserver extends Server
         if (pMessage.equals("LOGIN:")) {
             String pUsername = pMessage.substring(6);
             login(pClientIP, pClientPort, pUsername);
-        } else if (pMessage.equals("LOGOUT")) {
-            loggedIn = false;
+        } else if (pMessage.startsWith("LOGOUT:")) {
+            String pUsername = pMessage.substring(7);
+            logout(pUsername, pClientIP);
             send(pClientIP, pClientPort, "You have been logged out.");
         } else if (pMessage.startsWith("BROADCAST:")) { // handle general message
             String message = pMessage.substring(10);

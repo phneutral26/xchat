@@ -12,12 +12,6 @@ public class xclient extends Client
             String username = scan.nextLine();
             send(username);
         }
-    }
-
-
-    public void start(String pServerIP, int pServerPort) {
-        Scanner scanner = new Scanner(System.in);
-
         while (true) {
             System.out.println("1. Login");
             System.out.println("2. Logout");
@@ -32,11 +26,12 @@ public class xclient extends Client
                 case 1: // Login
                     System.out.println("Enter username:");
                     String username = scanner.nextLine();
-                    server.login(username);
+                    send("LOGIN:" + username);
                     break;
 
                 case 2: // Logout
                     send("LOGOUT");
+                    loggedIn = false;
                     break;
 
                 case 3: // Broadcast message
@@ -56,8 +51,8 @@ public class xclient extends Client
                 default:
                     System.out.println("Invalid choice. Please try again.");
                     break;
-            }
-        }
+    }
+
     public void processMessage(String pMessage) {
         if (pMessage.equals("LOGIN_SUCCESS")) {
             loggedIn = true;
