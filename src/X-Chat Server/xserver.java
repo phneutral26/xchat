@@ -52,31 +52,7 @@ public class xserver extends Server
         System.out.println("User " + pUsername + " is not logged in.");
     }
 
-    public void processMessage(String pMessage) {
-        if (pMessage.equals("LOGIN:")) {
-            String pUsername = pMessage.substring(6);
-            login(pUsername);
-        } else if (pMessage.equals("LOGOUT_SUCCESS")) {
-            loggedIn = false;
-            System.out.println("You have been logged out.");
-        } else if (pMessage.startsWith("BROADCAST:")) { // handle general message
-            String message = pMessage.substring(10);
-            broadcastMessage(message);
-        } else if (pMessage.startsWith("PRIVATE:")) { // handle private message
-            String[] parts = pMessage.substring(8).split(":");
-            String recipient = parts[0];
-            String message = parts[1];
-            privateMessage(recipient, message);
-        } else if (pMessage.startsWith("USERLIST:")) {
-            String[] users = pMessage.substring(9).split(",");
-            System.out.println("Connected users:");
-            for (String user : users) {
-                System.out.println(user);
-            }
-        } else {
-            System.out.println(pMessage);
-        }
-    }
+
 
     public void broadcastMessage(String message) {
         // Iterate through all connected users
@@ -98,7 +74,31 @@ public class xserver extends Server
             System.out.println("User " + recipientUsername + " does not exist or is not online.");
         }
     }
-
+    public void processMessage(String pClientIP, int pClientPort, String pMessage) {
+        if (pMessage.equals("LOGIN:")) {
+            String pUsername = pMessage.substring(6);
+            login(pClientIP, pClientPort, pUsername);
+        } else if (pMessage.equals("LOGOUT")) {
+            loggedIn = false;
+            send(pClientIP, pClientPort, "You have been logged out.");
+        } else if (pMessage.startsWith("BROADCAST:")) { // handle general message
+            String message = pMessage.substring(10);
+            broadcastMessage(message);
+        } else if (pMessage.startsWith("PRIVATE:")) { // handle private message
+            String[] parts = pMessage.substring(8).split(":");
+            String recipient = parts[0];
+            String message = parts[1];
+            privateMessage(recipient, message);
+        } else if (pMessage.startsWith("USERLIST:")) {
+            String[] users = pMessage.substring(9).split(",");
+            System.out.println("Connected users:");
+            for (String user : users) {
+                System.out.println(user);
+            }
+        } else {
+            System.out.println(pMessage);
+        }
+    }
     public void processClosingConnection(String pIP, int pPort)
     {
         
