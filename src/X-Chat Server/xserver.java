@@ -37,7 +37,7 @@ public class xserver extends Server
         while(users.hasAccess()) {
             if (users.getContent().equals(pUsername)) {
                 String userIP = usersToIP.get(pUsername);
-                if (pIP.equals(userIP)) {   // Verifizieren Sie, ob die Anfrage legitimerweise vom Benutzer stammt
+                if (pClientIP.equals(userIP)) {   // Verifizieren Sie, ob die Anfrage legitimerweise vom Benutzer stammt
                     users.remove();
                     usersToIP.remove(pUsername);
                     send(pClientIP, pClientPort, "LOGOUT_SUCCESS");
@@ -78,7 +78,7 @@ public class xserver extends Server
             login(pClientIP, pClientPort, pUsername);
         } else if (pMessage.startsWith("LOGOUT:")) { //Uberprufung auf Logoout
             String pUsername = pMessage.substring(7);
-            logout(pUsername, pClientIP);
+            logout(pClientIP, pClientPort, pUsername);
             send(pClientIP, pClientPort, "You have been logged out.");
         } else if (pMessage.startsWith("BROADCAST:")) { // handle general message
             String message = pMessage.substring(10);
@@ -105,8 +105,5 @@ public class xserver extends Server
     
     public void processNewConnection(String pIP, int pPort)
     {
-        this.send(pIP, pPort, "Bitte gib deinen Benutzernamen an:");
-
-         
     }
 }
