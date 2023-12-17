@@ -9,6 +9,10 @@ public class xserver extends Server {
     }
 
     public void login(String pIP, int pPort, String pUsername) {
+        if (pIP == null || pUsername == null) {
+            System.out.println("IP or Username cannot be null");
+            return;
+        }
         if (usersToIP.containsKey(pUsername)) {
             send(pIP, pPort, "LOGIN_FAILURE");
         } else {
