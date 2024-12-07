@@ -1,0 +1,17 @@
+#BlueJ class context
+comment0.target=chatroom
+comment1.params=users\ name\ isPrivate
+comment1.target=chatroom(List,\ java.lang.String,\ boolean)
+comment2.params=pUsername
+comment2.target=void\ addUser(java.lang.String)
+comment3.params=pUsername
+comment3.target=void\ rmUser(java.lang.String)
+comment4.params=
+comment4.target=List\ getUsers()
+comment5.params=
+comment5.target=boolean\ getPrivate()
+comment6.params=pName
+comment6.target=void\ setName(java.lang.String)
+comment7.params=
+comment7.target=java.lang.String\ getName()
+numComments=8

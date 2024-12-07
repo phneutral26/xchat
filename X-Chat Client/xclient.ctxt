@@ -1,0 +1,9 @@
+#BlueJ class context
+comment0.target=xclient
+comment1.params=
+comment1.target=xclient()
+comment1.text=\r\n\ xclient\ class\ represents\ a\ client\ for\ X-Chat\ V1.\r\n\ It\ allows\ a\ user\ to\ connect\ to\ the\ server\ and\ perform\ various\ operations\ such\ as\ logging\ in,\ sending\ broadcast\ messages,\ sending\ private\ messages,\ listing\ users,\ and\ blocking\r\n\ users.\r\n\ To\ use\ this\ class,\ create\ an\ instance\ of\ the\ xclient\ class.\r\n\ The\ user\ will\ be\ prompted\ to\ enter\ a\ username.\r\n\ The\ client\ will\ attempt\ to\ establish\ a\ connection\ with\ the\ server\ using\ the\ IP\ address\ "127.0.0.1"\ and\ port\ number\ 420.\r\n\ If\ the\ connection\ is\ successful,\ the\ user\ will\ be\ prompted\ for\ further\ options.\r\n\ The\ user\ can\ choose\ to\ logout,\ send\ a\ broadcast\ message,\ send\ a\ private\ message,\ list\ users,\ or\ block\ a\ user.\r\n\ When\ the\ user\ selects\ an\ option,\ the\ client\ will\ send\ the\ appropriate\ message\ to\ the\ server.\r\n\ The\ client\ will\ continue\ to\ prompt\ the\ user\ for\ options\ until\ the\ user\ chooses\ to\ logout.\r\n\ If\ the\ user\ is\ not\ logged\ in,\ no\ operations\ can\ be\ performed\ and\ the\ program\ will\ exit.\r\n
+comment2.params=pMessage
+comment2.target=void\ processMessage(java.lang.String)
+comment2.text=\r\n\ Processes\ the\ given\ message\ and\ performs\ the\ appropriate\ actions\ based\ on\ its\ value.\r\n\r\n\ @param\ pMessage\ the\ message\ to\ be\ processed\r\n
+numComments=3
